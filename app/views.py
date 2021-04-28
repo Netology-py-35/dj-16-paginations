@@ -21,14 +21,23 @@ def read_cvs(file_name):
 
 
 def bus_stations(request):
-    # current_page = 1
-    # next_page_url = 'write your url'
-    # # page_number = int(request.GET.get('page', 1))
     CONTENT = read_cvs('data-398-2018-08-30.csv')
 
     paginator = Paginator(CONTENT, 10)  # Show 10 contacts per page.
-    page_number = request.GET.get('page')
+    page_number = int(request.GET.get('page', 1))
     page_obj = paginator.get_page(page_number)
+    current_page = page_obj.number
+    prev_page_url=None
+    next_page_url=None
+    if page_obj.has_previous():
+        prev_page_url = f'?page={page_obj.previous_page_number()}'
+    if page_obj.has_next():
+        next_page_url = f'?page={page_obj.next_page_number()}'
 
-    return render(request, 'index.html', {'list': page_obj})
+
+    return render(request, 'index.html', context={
+        'bus_stations': page_obj,
+        'current_page': current_page,
+        'prev_page_url': prev_page_url,
+        'next_page_url': next_page_url,})
 
